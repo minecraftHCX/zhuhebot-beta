@@ -4,14 +4,11 @@ import os
 import time
 
 import botpy
-from botpy import BotAPI
 from botpy import logging
 from botpy.ext.cog_yaml import read
 from botpy.ext.command_util import Commands
 from botpy.message import Message
-from botpy.types.message import Reference
 
-test_config = read(os.path.join(os.path.dirname(__file__), "config.yaml"))
 _log = logging.get_logger()
 
 helplist = """使用说明
@@ -25,9 +22,7 @@ helplist = """使用说明
 /问好
     返回一句简单的问好语句
     示例：/问好 
-————————————————————————————————————
-                                        下方的正在开发中 \('——')/
-————————————————————————————————————
+_________下方未开发_____________
 /举报 违规详情
     允许举报成员违规行为，需回复源消息（待开发）
     示例：/举报 宣传违规软件
@@ -46,11 +41,11 @@ helplist = """使用说明
     解除成员禁言状态（待开发）
     示例：/解封 @AFK
 
-帮助文档版本：0.03beta"""
+帮助文档版本：a 0.03beta"""
 
 
 @Commands("/帮助")
-async def help_list(message: Message):
+async def help_list(message: Message,):
     _log.info('执行了帮助命令')
     await message.reply(
         content=helplist
@@ -82,19 +77,15 @@ async def now_time(message: Message):
     return True
 
 
-@Commands("设置")
-async def say_hello(api: BotAPI, message: Message, params=None):
+@Commands("/问好")
+async def say_hello(message: Message):
     t = time.strftime("%Y-%m-%d, %H:%M:%S")
     _log.info(f'执行了问好命令,返回了时间“{t}”和简单问好')
-    message_reference = Reference(message_id=message.id)
-    await api.post_message(
-        channel_id=message.channel_id,
-        content='''现在是“{t}”。你好，很高兴认识你!
-            It is '{t}'.Hi,nice to meet you!''',
-        msg_id=message.id,
-        message_reference=message_reference,
+
+    await message.reply(
+        content=f'''现在是“{t}”。你好，很高兴认识你!
+    It is '{t}'.Hi,nice to meet you!'''
     )
-    return True
 
 
 class MyClient(botpy.Client):
@@ -104,7 +95,7 @@ class MyClient(botpy.Client):
             help_list,
             no_thing,
             now_time,
-            say_hello,
+            say_hello
         ]
         for handler in tasks:
             if await handler(api=self.api, message=message):
@@ -119,4 +110,4 @@ if __name__ == "__main__":
     # 通过kwargs，设置需要监听的事件通道
     intents = botpy.Intents(public_guild_messages=True)
     client = MyClient(intents=intents)
-    client.run(appid=test_config["appid"], secret=test_config["secret"])
+    client.run(appid="102268340", secret="quy26AEINSXchmrw28EKQWcjqx4BIPXf")

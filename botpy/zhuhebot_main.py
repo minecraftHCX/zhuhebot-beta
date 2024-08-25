@@ -17,6 +17,8 @@ config = read(os.path.join(os.path.dirname(__file__), "config.yaml"))
 text = load_yaml('text.yaml')
 help_list = text["help_list"]
 child_stiitings_error = text["child_stiitings_error"]
+not_complete = text["not_complete"]
+
 _log = logging.get_logger()
 @Commands("帮助")
 async def help(api: BotAPI, message: Message, params=None):
@@ -30,6 +32,41 @@ async def help(api: BotAPI, message: Message, params=None):
     )
     return True
 
+@Commands("设置")
+async def sittings(api: BotAPI, message: Message, params=None):
+    _log.info("返回：未完成")
+    message_reference = Reference(message_id=message.id)
+    await api.post_message(
+        channel_id=message.channel_id,
+        content=not_complete,
+        msg_id=message.id,
+        message_reference=message_reference,
+    )
+    return True
+
+@Commands("禁言")
+async def sittings(api: BotAPI, message: Message, params=None):
+    _log.info("返回：未完成")
+    message_reference = Reference(message_id=message.id)
+    await api.post_message(
+        channel_id=message.channel_id,
+        content=not_complete,
+        msg_id=message.id,
+        message_reference=message_reference,
+    )
+    return True
+
+@Commands("封禁")
+async def sittings(api: BotAPI, message: Message, params=None):
+    _log.info("返回：未完成")
+    message_reference = Reference(message_id=message.id)
+    await api.post_message(
+        channel_id=message.channel_id,
+        content=not_complete,
+        msg_id=message.id,
+        message_reference=message_reference,
+    )
+    return True
 @Commands("子频道设置")
 async def child_settings(api: BotAPI, message: Message, params=None):
     _log.info("子频道设置回复")
@@ -43,12 +80,12 @@ async def child_settings(api: BotAPI, message: Message, params=None):
     return True
 
 @Commands("举报")
-async def help(api: BotAPI, message: Message, params=None):
+async def report(api: BotAPI, message: Message, params=None):
     _log.info("收到举报"+message.content)
     message_reference = Reference(message_id=message.id)
     await api.post_message(
         channel_id=message.channel_id,
-        content="收到举报,请等待管理员处理或@小智管家进行快速处理" ,
+        content="收到举报,请等待管理员处理或在源消息下@小智管家/举报 进行快速处理" ,
         msg_id=message.id,
         message_reference=message_reference,
     )
@@ -61,6 +98,8 @@ class MyClient(botpy.Client):
         handlers = [
             help,
             child_settings,
+            report,
+            sittings,
         ]
         for handler in handlers:
             if await handler(api=self.api, message=message):
