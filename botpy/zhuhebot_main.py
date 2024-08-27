@@ -54,16 +54,16 @@ async def sittings(api: BotAPI, message: Message, params=None):
 async def mute(api: BotAPI, message: Message, params=None):
     _log.info("执行禁言操作")
     admin = ["2", "4", "5"]
-    # 确保 message.mentions 至少有一个用户
     if any(item in message.member.roles for item in admin):
+        # 检测用户权限
         if message.mentions and len(message.mentions) > 1:
-            user = message.mentions[1]  # 获取第一个提到的用户
+            user = message.mentions[1]  # 获取提到的用户（设置成1是因为机器人吧自己也算在里面的）
             message_reference = Reference(message_id=message.id)
             # 从消息内容中解析禁言时间
             try:
-                # 假设格式为: @机器人 /禁言 @禁言者 时间
+                # 预定格式为: @机器人 /禁言 @禁言者 时间
                 parts = message.content.split()
-                mute_seconds = int(parts[-1])  # 假设时间是最后一个部分
+                mute_seconds = int(parts[-1])
             except (IndexError, ValueError):
                 _log.warning("无法解析禁言时间，默认禁言20秒")
                 mute_seconds = 20  # 设置默认禁言时间
@@ -78,7 +78,7 @@ async def mute(api: BotAPI, message: Message, params=None):
                 )
                 _log.info("用户试图禁言自己，操作已阻止")
                 return False
-            # 正确获取用户的用户名，并显示禁言时间
+            # 输出用户的用户名、禁言时间
             await api.post_message(
                 channel_id=message.channel_id,
                 content=f"{user.username} 被禁言 {mute_seconds} 秒",
@@ -112,7 +112,7 @@ async def mute(api: BotAPI, message: Message, params=None):
         )
         return False
     return True
-
+#鬼知道我为什么要看api文档RRR！！！PythonSDK本来就有啊啊啊（扭曲）
 
 @Commands("封禁")
 async def ban(api: BotAPI, message: Message, params=None):
