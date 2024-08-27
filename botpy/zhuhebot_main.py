@@ -76,7 +76,7 @@ async def mute(api: BotAPI, message: Message, params=None):
         # 正确获取用户的用户名，并显示禁言时间
         await api.post_message(
             channel_id=message.channel_id,
-            content=f"{colls} {user.username} 被禁言 {mute_seconds} 秒",
+            content=f"{user.username} 被禁言 {mute_seconds} 秒",
             msg_id=message.id,
             message_reference=message_reference,
         )
