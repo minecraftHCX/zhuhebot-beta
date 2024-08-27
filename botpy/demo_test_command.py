@@ -14,29 +14,35 @@ test_config = read(os.path.join(os.path.dirname(__file__), "config.yaml"))
 _log = logging.get_logger()
 
 
+@Commands("封禁")
+async def ban(api: BotAPI, message: Message, params=None):
+    # 确保有 mentions 列表，并且至少有一个用户提及
+    if message.mentions and len(message.mentions) > 1:
+        user_to_ban = message.mentions[1]
 
-@Commands("管理等级")
-async def mute(api: BotAPI, message: Message, params=None,):
-    among = ["4", "5", "13"]
-    member = message.member.roles
-    message_reference = Reference(message_id=message.id)
-    if any(item in member for item in among):
-        await api.post_message(
-            channel_id=message.channel_id,
-            content="你具有管理员权限"+str(member),
-            msg_id=message.id,
-            message_reference=message_reference,
-        )
-        _log.info("true")
-
-    return True
+        try:
+            # 确保 guild_id 存在
+            if message.guild_id:
+                await api.get_delete_member(
+                    guild_id=message.guild_id,
+                    user_id=user_to_ban.id,  # 仅传递 user_id
+                    add_blacklist=False,
+                    delete_history_msg_days=0
+                )
+                _log.info("User successfully banned.")
+            else:
+                _log.error("Guild ID not found.")
+        except Exception as e:
+            _log.error(f"Failed to ban user: {e}")
+    else:
+        _log.error("No users mentioned in the message.")
 
 
 class MyClient(botpy.Client):
     async def on_at_message_create(self, message: Message):
         # 注册指令 handler
         handlers = [
-            mute,  # 使用 mute 作为处理函数
+            ban,  # 使用 mute 作为处理函数
         ]
         for handler in handlers:
             if await handler(api=self.api, message=message):

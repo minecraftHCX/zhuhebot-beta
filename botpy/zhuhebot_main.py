@@ -113,17 +113,105 @@ async def mute(api: BotAPI, message: Message, params=None):
         return False
     return True
 #鬼知道我为什么要看api文档RRR！！！PythonSDK本来就有啊啊啊（扭曲）
-
+@Commands("解除禁言")
+async def unmute(api: BotAPI, message: Message, params=None):
+    _log.info("执行禁言操作")
+    admin = ["2", "4", "5"]
+    if any(item in message.member.roles for item in admin):
+        # 检测用户权限
+        if message.mentions and len(message.mentions) > 1:
+            user = message.mentions[1]  # 获取提到的用户（设置成1是因为机器人吧自己也算在里面的）
+            message_reference = Reference(message_id=message.id)
+            await api.post_message(
+                channel_id=message.channel_id,
+                content="已解除"+user+"的禁言状态！",
+                msg_id=message.id,
+                message_reference=message_reference,
+            )
+            #解除禁言
+            await api.cancel_mute_multi_member(
+                guild_id=message.guild_id,
+                user_ids=user,
+            )
+        else:
+            message_reference = Reference(message_id=message.id)
+            _log.warning("没有提到用户，无法执行解禁操作!")
+            await api.post_message(
+                channel_id=message.channel_id,
+                content="请提到要解禁的用户!",
+                msg_id=message.id,
+                message_reference=message_reference,
+            )
+    else:
+        message_reference = Reference(message_id=message.id)
+        _log.warning("用户无权限")
+        await api.post_message(
+            channel_id=message.channel_id,
+            content="你没有权限使用此指令！",
+            msg_id=message.id,
+            message_reference=message_reference,
+        )
+        return False
+    return True
 @Commands("封禁")
 async def ban(api: BotAPI, message: Message, params=None):
-    _log.info("返回：未完成")
-    message_reference = Reference(message_id=message.id)
-    await api.post_message(
-        channel_id=message.channel_id,
-        content=not_complete,
-        msg_id=message.id,
-        message_reference=message_reference,
-    )
+    _log.info("执行封禁功能")
+    admin = ["2", "4", "5"]
+    if any(item in message.member.roles for item in admin):
+        # 检测用户权限
+        if message.mentions and len(message.mentions) > 1:
+            user = message.mentions[1]  # 获取提到的用户（设置成1是因为机器人吧自己也算在里面的）
+            message_reference = Reference(message_id=message.id)
+            if user.id == message.author.id:
+                await api.post_message(
+                    channel_id=message.channel_id,
+                    content="你不能封禁自己！",
+                    msg_id=message.id,
+                    message_reference=message_reference,
+                )
+                _log.info("用户试图封禁自己，操作已阻止")
+                return False
+            if any(item in message.mentions for item in admin):
+                await api.post_message(
+                    channel_id=message.channel_id,
+                    content="你不能封禁管理员！",
+                    msg_id=message.id,
+                    message_reference=message_reference,
+                )
+                _log.info("用户试图封禁自己，操作已阻止")
+                return False
+            await api.post_message(
+                channel_id=message.channel_id,
+                content="已封禁"+user.username+"！",
+                msg_id=message.id,
+                message_reference=message_reference,
+            )
+            #封禁
+            await api.get_delete_member(
+                guild_id=message.guild_id,
+                user_id=user.id,
+                add_blacklist=False,
+                delete_history_msg_days= -1
+            )
+        else:
+            message_reference = Reference(message_id=message.id)
+            _log.warning("没有提到用户，无法执行封禁操作!")
+            await api.post_message(
+                channel_id=message.channel_id,
+                content="请提到要封禁的用户!",
+                msg_id=message.id,
+                message_reference=message_reference,
+            )
+    else:
+        message_reference = Reference(message_id=message.id)
+        _log.warning("用户无权限")
+        await api.post_message(
+            channel_id=message.channel_id,
+            content="你没有权限使用此指令！",
+            msg_id=message.id,
+            message_reference=message_reference,
+        )
+        return False
     return True
 
 
