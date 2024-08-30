@@ -16,7 +16,7 @@ def load_yaml(file_path):
 
 
 config = read(os.path.join(os.path.dirname(__file__), "config.yaml"))
-text = load_yaml('text.yaml')
+text = read(os.path.join(os.path.dirname(__file__), "text.yaml"))
 help_list = text["help_list"]
 child_stiitings_error = text["child_stiitings_error"]
 not_complete = text["not_complete"]
@@ -113,9 +113,9 @@ async def mute(api: BotAPI, message: Message, params=None):
         return False
     return True
 #鬼知道我为什么要看api文档RRR！！！PythonSDK本来就有啊啊啊（扭曲）
-@Commands("解除禁言")
+@Commands("解封")
 async def unmute(api: BotAPI, message: Message, params=None):
-    _log.info("执行禁言操作")
+    _log.info("解除禁言操作")
     admin = ["2", "4", "5"]
     if any(item in message.member.roles for item in admin):
         # 检测用户权限
@@ -124,7 +124,7 @@ async def unmute(api: BotAPI, message: Message, params=None):
             message_reference = Reference(message_id=message.id)
             await api.post_message(
                 channel_id=message.channel_id,
-                content="已解除"+user+"的禁言状态！",
+                content="已解除"+user.username+"的禁言状态！",
                 msg_id=message.id,
                 message_reference=message_reference,
             )
@@ -250,6 +250,7 @@ class MyClient(botpy.Client):
             report,
             sittings,
             mute,
+            unmute,
             ban,
         ]
         for handler in handlers:
