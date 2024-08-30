@@ -7,5 +7,7 @@
 机器人主体文件在botpy/zhuhebot_main.py
 
 beta版完结撒花✿✿ヽ(°▽°)ノ✿
+
 QQ频道机器人算是入门了
+
 下个版本将尝试探索私信,markdown等特殊功能~
